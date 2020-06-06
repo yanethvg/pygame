@@ -1,4 +1,4 @@
-Colores
+Tema : Colores
 Tú puedes combinar la cantidad de rojo, verde y azul para formar nuevos colores. Aquí una lista de colores los cuales consideró te serán de mucha ayuda.
 
 Aqua Black Blue Fuchsia Gray Green Lime Maroon Navy Blue Olive Purple Red Silver Teal White Yellow RGB Values
