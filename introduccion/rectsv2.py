@@ -7,7 +7,7 @@ width = 400
 height = 500
 
 surface = pygame.display.set_mode( (width, height)) # surface
-pygame.display.set_caption('Rectangulos v1')
+pygame.display.set_caption('Rectangulos v2')
 #los colores se dominan con RGB
 #a traves de la clase color
 red = pygame.Color(255,0,0) # 0- 255 rojo
@@ -27,6 +27,11 @@ rect.center = (width // 2, height // 2) #doble // para que sea entero
 print(rect.x)
 print(rect.y)
 
+#haciendo el rectangulo a traves de una tupla
+#rect2 = (x,y,width,height)
+# si se trabaja con una tupla no se puede trabajar con los atributos x, y y center
+rect2= (100,100,80,40)
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -38,5 +43,6 @@ while True:
     # se ubica en la esquina superior izquierda 
     #colocando el rectangulo
     pygame.draw.rect(surface,red,rect)
+    pygame.draw.rect(surface,green,rect2)
     #actualizando el espacio
     pygame.display.update()
