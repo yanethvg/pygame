@@ -32,7 +32,7 @@ while True:
     #pintando la pantalla
     surface.fill(white)
 
-    surface.blit(surface2, rect )
+    surface.blit(surface2, rect)
 
     pygame.draw.rect(surface2,red,(100,50,80,40))
     pygame.display.update()
