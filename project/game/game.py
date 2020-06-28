@@ -15,6 +15,7 @@ class Game:
         pygame.display.set_caption(TITLE)
 
         self.running = True
+        self.playing = True
 
     def start(self):
         self.new()
@@ -80,15 +81,34 @@ class Game:
         self.sprites.draw(self.surface)
 
     def update(self):
-        pygame.display.flip()
-        # todos los elementos de la lista se actualizaran
-        self.sprites.update()
+        if self.playing:
+            pygame.display.flip()
 
-        self.player.validate_platform(self.platform)
+            wall = self.player.collide_with(self.walls)
+            if wall:
+                if self.player.collide_bottom(wall):
+                    self.player.skid(wall)
+                else:
+                    self.stop()
+            # todos los elementos de la lista se actualizaran
+            self.sprites.update()
 
-        wall = self.player.collide_with(self.walls)
-        if wall:
-            self.stop()
+            self.player.validate_platform(self.platform)
+            # liberando ram
+            self.update_elements(self.walls)
+            self.generate_walls()
+
+    def update_elements(self, elements):
+        for element in elements:
+            if not element.rect.right > 0:
+                element.kill()
 
     def stop(self):
-        print("Existe una colisión")
+        self.player.stop()
+        self.stop_elements(self.walls)
+
+        self.playing = False
+
+    def stop_elements(self, elements):
+        for element in elements:
+            element.stop()
