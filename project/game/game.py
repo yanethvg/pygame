@@ -5,6 +5,7 @@ from .config import *
 from .platform import Platform
 from .player import Player
 from .wall import Wall
+from .coin import Coin
 
 
 class Game:
@@ -16,6 +17,8 @@ class Game:
 
         self.running = True
         self.playing = True
+
+        self.clock = pygame.time.Clock()
 
     def start(self):
         self.new()
@@ -33,12 +36,14 @@ class Game:
 
         self.sprites = pygame.sprite.Group()
         self.walls = pygame.sprite.Group()
+        self.coins = pygame.sprite.Group()
 
         self.sprites.add(self.platform)
         self.sprites.add(self.player)
         # self.sprites.add(self.wall)
 
         self.generate_walls()
+        self.generate_coins()
 
     def generate_walls(self):
 
@@ -54,17 +59,29 @@ class Game:
                 self.sprites.add(wall)
                 self.walls.add(wall)
 
+    def generate_coins(self):
+        last_position = WIDTH + 100
+        if not len(self.coins) > 0:
+
+            for c in range(0, MAX_COINS):
+                pos_x = random.randrange(
+                    last_position + 180, last_position + 300)
+
+                coin = Coin(pos_x, 150)
+
+                last_position = coin.rect.right
+
+                self.sprites.add(coin)
+                self.coins.add(coin)
+
     def run(self):
         while self.running:
+            self.clock.tick(FPS)
             self.events()
             self.draw()
             self.update()
 
     def events(self):
-        # modificando la velocidad de salto
-        clock = pygame.time.Clock()
-        clock.tick(60)
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False

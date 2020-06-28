@@ -1,6 +1,8 @@
 WIDTH = 800
 HEIGHT = 400
 
+FPS = 60
+
 TITLE = 'Facilito game!!'
 
 WHITE = (255, 255, 255)
@@ -16,3 +18,4 @@ PLAYER_GRAV = 1.2
 SPEED = 5
 
 MAX_WALLS = 10
+MAX_COINS = 10
