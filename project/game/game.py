@@ -1,6 +1,8 @@
 import pygame
+import os
 import sys
 import random
+
 from .config import *
 from .platform import Platform
 from .player import Player
@@ -16,14 +18,21 @@ class Game:
         pygame.display.set_caption(TITLE)
 
         self.running = True
-        self.playing = True
 
         self.clock = pygame.time.Clock()
+
+        self.dir = os.path.dirname(__file__)
+        self.dir_sounds = os.path.join(self.dir, 'sources/sounds')
+
+        self.font = pygame.font.match_font(FONT)
 
     def start(self):
         self.new()
 
     def new(self):
+        self.score = 0
+        self.level = 0
+        self.playing = True
         self.generate_elements()
         self.run()
 
@@ -43,7 +52,7 @@ class Game:
         # self.sprites.add(self.wall)
 
         self.generate_walls()
-        self.generate_coins()
+        # self.generate_coins()
 
     def generate_walls(self):
 
@@ -58,6 +67,9 @@ class Game:
 
                 self.sprites.add(wall)
                 self.walls.add(wall)
+
+            self.level += 1
+            self.generate_coins()
 
     def generate_coins(self):
         last_position = WIDTH + 100
@@ -78,8 +90,8 @@ class Game:
         while self.running:
             self.clock.tick(FPS)
             self.events()
-            self.draw()
             self.update()
+            self.draw()
 
     def events(self):
         for event in pygame.event.get():
@@ -92,14 +104,20 @@ class Game:
         if key[pygame.K_SPACE]:
             self.player.jump()
 
+        if key[pygame.K_r] and not self.playing:
+            self.new()
+
     def draw(self):
         self.surface.fill(BLACK)
 
+        self.draw_text()
+
         self.sprites.draw(self.surface)
+
+        pygame.display.flip()
 
     def update(self):
         if self.playing:
-            pygame.display.flip()
 
             wall = self.player.collide_with(self.walls)
             if wall:
@@ -107,12 +125,24 @@ class Game:
                     self.player.skid(wall)
                 else:
                     self.stop()
+
+            coin = self.player.collide_with(self.coins)
+            if coin:
+                self.score += 1
+                coin.kill()
+
+                sound = pygame.mixer.Sound(
+                    os.path.join(self.dir_sounds, 'coin.wav'))
+                sound.play()
+
             # todos los elementos de la lista se actualizaran
             self.sprites.update()
 
             self.player.validate_platform(self.platform)
             # liberando ram
             self.update_elements(self.walls)
+            self.update_elements(self.coins)
+
             self.generate_walls()
 
     def update_elements(self, elements):
@@ -121,6 +151,9 @@ class Game:
                 element.kill()
 
     def stop(self):
+        sound = pygame.mixer.Sound(
+            os.path.join(self.dir_sounds, 'lose.wav'))
+        sound.play()
         self.player.stop()
         self.stop_elements(self.walls)
 
@@ -129,3 +162,27 @@ class Game:
     def stop_elements(self, elements):
         for element in elements:
             element.stop()
+
+    def level_format(self):
+        return 'Level: {}'.format(self.level)
+
+    def draw_text(self):
+        self.display_text(self.score_format(), 36, WHITE, WIDTH//2, TEXT_POSY)
+        self.display_text(self.level_format(), 36, WHITE, 60, TEXT_POSY)
+
+        if not self.playing:
+            self.display_text('Perdiste', 30, WHITE, WIDTH//2, HEIGHT//2)
+            self.display_text('Presiona r para comenzar de nuevo',
+                              60, WHITE, WIDTH//2, 100)
+
+    def score_format(self):
+        return 'Score : {}'.format(self.score)
+
+    def display_text(self, text, size, color, pos_x, pos_y):
+        font = pygame.font.Font(self.font, size)
+        text = font.render(text, True, color)
+
+        rect = text.get_rect()
+        rect.midtop = (pos_x, pos_y)
+
+        self.surface.blit(text, rect)

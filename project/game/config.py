@@ -19,3 +19,6 @@ SPEED = 5
 
 MAX_WALLS = 10
 MAX_COINS = 10
+
+FONT = 'Arial'
+TEXT_POSY = 20
