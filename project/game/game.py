@@ -23,22 +23,27 @@ class Game:
 
         self.dir = os.path.dirname(__file__)
         self.dir_sounds = os.path.join(self.dir, 'sources/sounds')
+        self.dir_images = os.path.join(self.dir, 'sources/sprites')
 
         self.font = pygame.font.match_font(FONT)
 
     def start(self):
+        self.menu()
         self.new()
 
     def new(self):
         self.score = 0
         self.level = 0
         self.playing = True
+        self.background = pygame.image.load(
+            os.path.join(self.dir_images, 'background.png'))
         self.generate_elements()
         self.run()
 
     def generate_elements(self):
         self.platform = Platform()
-        self.player = Player(100, self.platform.rect.top - 200)
+        self.player = Player(
+            100, self.platform.rect.top - 200, self.dir_images)
 
         # generando pared
         #self.wall = Wall(500, self.platform.rect.top)
@@ -62,7 +67,7 @@ class Game:
             for w in range(0, MAX_WALLS):
                 left = random.randrange(
                     last_position + 200, last_position + 400)
-                wall = Wall(left, self.platform.rect.top)
+                wall = Wall(left, self.platform.rect.top, self.dir_images)
                 last_position = wall.rect.right
 
                 self.sprites.add(wall)
@@ -79,7 +84,7 @@ class Game:
                 pos_x = random.randrange(
                     last_position + 180, last_position + 300)
 
-                coin = Coin(pos_x, 150)
+                coin = Coin(pos_x, 100, self.dir_images)
 
                 last_position = coin.rect.right
 
@@ -108,7 +113,8 @@ class Game:
             self.new()
 
     def draw(self):
-        self.surface.fill(BLACK)
+        # self.surface.fill(BLACK)
+        self.surface.blit(self.background, (0, 0))
 
         self.draw_text()
 
@@ -167,13 +173,13 @@ class Game:
         return 'Level: {}'.format(self.level)
 
     def draw_text(self):
-        self.display_text(self.score_format(), 36, WHITE, WIDTH//2, TEXT_POSY)
-        self.display_text(self.level_format(), 36, WHITE, 60, TEXT_POSY)
+        self.display_text(self.score_format(), 36, BLACK, WIDTH//2, TEXT_POSY)
+        self.display_text(self.level_format(), 36, BLACK, 60, TEXT_POSY)
 
         if not self.playing:
-            self.display_text('Perdiste', 30, WHITE, WIDTH//2, HEIGHT//2)
+            self.display_text('Perdiste', 30, BLACK, WIDTH//2, HEIGHT//2)
             self.display_text('Presiona r para comenzar de nuevo',
-                              60, WHITE, WIDTH//2, 100)
+                              50, BLACK, WIDTH//2, 50)
 
     def score_format(self):
         return 'Score : {}'.format(self.score)
@@ -186,3 +192,28 @@ class Game:
         rect.midtop = (pos_x, pos_y)
 
         self.surface.blit(text, rect)
+
+    def menu(self):
+        self.surface.fill(GREEN_LIGHT)
+        self.display_text('Presiona una tecla para comenzar',
+                          36, BLACK, WIDTH // 2, 10)
+
+        pygame.display.flip()
+
+        self.wait()
+
+    def wait(self):
+        wait = True
+
+        while wait:
+            self.clock.tick(FPS)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    wait = False
+                    self.running = False
+                    pygame.quit()
+                    sys.exit()
+
+                if event.type == pygame.KEYUP:
+                    wait = False

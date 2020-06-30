@@ -1,13 +1,21 @@
 import pygame
+import os
 from .config import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, left, bottom):
+    def __init__(self, left, bottom, dir_images):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.Surface((40, 40))
-        self.image.fill(BLUE)
+        self.images = (
+            pygame.image.load(os.path.join(dir_images, 'player1.png')),
+            pygame.image.load(os.path.join(dir_images, 'jump.png')),
+        )
+        #self.image = pygame.image.load(os.path.join(dir_images, 'player1.png'))
+        self.image = self.images[0]
+
+        #self.image = pygame.Surface((40, 40))
+        # self.image.fill(BLUE)
 
         self.rect = self.image.get_rect()
         # self.rect.x = 100
@@ -35,7 +43,7 @@ class Player(pygame.sprite.Sprite):
         self.vel_y = 0
         self.can_jump = True
 
-        #self.image = self.images[0]
+        self.image = self.images[0]
 
     def validate_platform(self, platform):
         result = pygame.sprite.collide_rect(self, platform)
@@ -44,14 +52,14 @@ class Player(pygame.sprite.Sprite):
             self.pos_y = platform.rect.top
             self.can_jump = True
 
-            #self.image = self.images[0]
+            self.image = self.images[0]
 
     def jump(self):
         if self.can_jump:
             self.vel_y = -23
             self.can_jump = False
 
-            #self.image = self.images[1]
+            self.image = self.images[1]
 
     def update_pos(self):
         self.vel_y += PLAYER_GRAV
